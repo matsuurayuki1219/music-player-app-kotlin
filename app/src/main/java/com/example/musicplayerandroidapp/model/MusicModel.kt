@@ -1,9 +1,11 @@
 package com.example.musicplayerandroidapp.model
 
+import androidx.annotation.RawRes
 import java.io.File
 
 data class MusicModel(
+    val id: Int,
     val artistName: String,
     val musicName: String,
-    val audioFile: File,
+    @RawRes val audioRes: Int,
 )
