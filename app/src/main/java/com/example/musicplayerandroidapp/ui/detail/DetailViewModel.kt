@@ -108,6 +108,7 @@ class DetailViewModel @Inject constructor(
                 is MediaState.Progress -> calculateProgressValues(mediaState.progress)
                 is MediaState.Ready -> {
                     duration = mediaState.duration
+                    _playerUiState.value = PlayerState.READY
                 }
             }
         }.launchIn(viewModelScope)
