@@ -17,6 +17,8 @@ class DetailViewModel @Inject constructor(
 
     private val id: Int = requireNotNull(savedStateHandle["id"])
 
+    private var currentId: Int = -1
+
     private val allMusic = repository.getMusicList()
 
     private val _uiState = MutableStateFlow(UiState.initValue())
@@ -24,13 +26,42 @@ class DetailViewModel @Inject constructor(
 
     init {
         _uiState.value = _uiState.value.copy(
-            music = allMusic.find { it.id == id }
+            music = allMusic.find { it.id == id },
         )
+        currentId = id
+    }
+
+    fun onPlayButtonClicked() {}
+
+    fun onNextButtonClicked() {
+        val nextId = currentId + 1
+        if (allMusic.any { it.id == nextId }) {
+            currentId = nextId
+            _uiState.value = _uiState.value.copy(
+                music = allMusic.find { it.id == nextId }
+            )
+        } else {
+            // error
+        }
+    }
+
+    fun onPreviousButtonClicked() {
+        val previousId = currentId - 1
+        if (allMusic.any { it.id == previousId }) {
+            currentId = previousId
+            _uiState.value = _uiState.value.copy(
+                music = allMusic.find { it.id == previousId }
+            )
+        } else {
+            // error
+        }
     }
 
     data class UiState(
         val music: MusicModel?,
     ) {
+        val hasNext = music?.let { it.id != 1 } ?: false
+        val hasPrevious = music?.let { it.id != 2 } ?: false
         companion object {
             fun initValue() = UiState(
                 music = null,
