@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -19,10 +20,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.musicplayerandroidapp.R
 import com.example.musicplayerandroidapp.model.MusicModel
+import com.example.musicplayerandroidapp.model.PlayerState
 
 @Composable
 fun DetailScreen(
-    viewModel: DetailViewModel = hiltViewModel()
+    viewModel: DetailViewModel = hiltViewModel(),
+    startService: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     DetailScreen(
@@ -33,6 +36,15 @@ fun DetailScreen(
         onNextButtonClicked = { viewModel.onNextButtonClicked() },
         onPreviousButtonClicked = { viewModel.onPreviousButtonClicked() },
     )
+    val playerState by viewModel.playerUiState.collectAsStateWithLifecycle()
+    when (playerState) {
+        PlayerState.INITIAL -> {}
+        PlayerState.READY -> {
+            LaunchedEffect(true) {
+                startService()
+            }
+        }
+    }
 }
 
 @Composable
@@ -78,7 +90,7 @@ fun PlayerButton(
             contentDescription = null,
             modifier = Modifier
                 .weight(1f)
-                .alpha( if (hasNext) 1f else 0.4f)
+                .alpha(if (hasNext) 1f else 0.4f)
                 .clickable { if (hasNext) onPreviousButtonClicked.invoke(Unit) },
         )
         Image(
@@ -93,7 +105,7 @@ fun PlayerButton(
             contentDescription = null,
             modifier = Modifier
                 .weight(1f)
-                .alpha( if (hasPrevious) 1f else 0.4f)
+                .alpha(if (hasPrevious) 1f else 0.4f)
                 .clickable { if (hasPrevious) onNextButtonClicked.invoke(Unit) }
         )
     }

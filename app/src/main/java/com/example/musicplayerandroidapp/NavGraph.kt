@@ -10,7 +10,10 @@ import com.example.musicplayerandroidapp.ui.detail.DetailScreen
 import com.example.musicplayerandroidapp.ui.home.HomeScreen
 
 @Composable
-fun NavGraph(navController: NavHostController) {
+fun NavGraph(
+    navController: NavHostController,
+    startService: () -> Unit,
+) {
     NavHost(navController = navController, startDestination = Screen.Home.route) {
         composable(route = Screen.Home.route) {
             HomeScreen(
@@ -23,7 +26,9 @@ fun NavGraph(navController: NavHostController) {
             route = "${Screen.Detail.route}/{id}",
             arguments = listOf(navArgument("id") { type = NavType.IntType })
         ) {
-            DetailScreen()
+            DetailScreen(
+                startService = startService,
+            )
         }
     }
 }
