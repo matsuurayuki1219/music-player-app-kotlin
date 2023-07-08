@@ -1,9 +1,15 @@
 package com.example.musicplayerandroidapp.service
 
 import android.annotation.SuppressLint
+import androidx.annotation.RawRes
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultDataSourceFactory
+import androidx.media3.datasource.RawResourceDataSource
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import com.example.musicplayerandroidapp.R
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,20 +29,26 @@ class PlayMusicServiceHandler @Inject constructor(
         job = Job()
     }
 
-    fun addMediaItem(mediaItem: MediaItem) {
+    @UnstableApi
+    fun playAudio(mediaItem: MediaItem) {
         player.setMediaItem(mediaItem)
         player.prepare()
     }
 
-    fun addMediaItemList(mediaItemList: List<MediaItem>) {
-        player.setMediaItems(mediaItemList)
+    @UnstableApi
+    fun playAudios(mediaItems: List<MediaItem>) {
+        player.setMediaItems(mediaItems)
         player.prepare()
     }
 
     suspend fun onPlayerEvent(playerEvent: PlayerEvent) {
         when (playerEvent) {
-            is PlayerEvent.Backward -> player.seekBack()
-            is PlayerEvent.Forward -> player.seekForward()
+            is PlayerEvent.Backward -> {
+                player.seekBack()
+            }
+            is PlayerEvent.Forward -> {
+                player.seekForward()
+            }
             is PlayerEvent.PlayPause -> {
                 if (player.isPlaying) {
                     player.pause()
@@ -47,8 +59,12 @@ class PlayMusicServiceHandler @Inject constructor(
                     startProgressUpdate()
                 }
             }
-            is PlayerEvent.Stop -> stopProgressUpdate()
-            is PlayerEvent.UpdateProgress -> player.seekTo((player.duration * playerEvent.newProgress).toLong())
+            is PlayerEvent.Stop -> {
+                stopProgressUpdate()
+            }
+            is PlayerEvent.UpdateProgress -> {
+                player.seekTo((player.duration * playerEvent.newProgress).toLong())
+            }
         }
     }
 

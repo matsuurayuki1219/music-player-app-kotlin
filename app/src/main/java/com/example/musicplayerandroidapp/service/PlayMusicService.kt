@@ -24,7 +24,6 @@ class PlayMusicService : MediaSessionService() {
             mediaSessionService = this,
             mediaSession = mediaSession
         )
-
         return super.onStartCommand(intent, flags, startId)
     }
 

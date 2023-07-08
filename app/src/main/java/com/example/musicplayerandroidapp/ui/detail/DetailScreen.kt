@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -26,23 +28,32 @@ import com.example.musicplayerandroidapp.model.PlayerState
 fun DetailScreen(
     viewModel: DetailViewModel = hiltViewModel(),
     startService: () -> Unit,
+    stopService: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val playerState by viewModel.playerUiState.collectAsStateWithLifecycle()
     DetailScreen(
         music = state.music,
         hasNext = state.hasNext,
         hasPrevious = state.hasPrevious,
+        position = playerState.progress,
+        duration = playerState.duration,
         onPlayButtonClicked = { viewModel.onPlayButtonClicked() },
         onNextButtonClicked = { viewModel.onNextButtonClicked() },
         onPreviousButtonClicked = { viewModel.onPreviousButtonClicked() },
+        onSeekTo = { viewModel.onSeekTo(position = it) }
     )
-    val playerState by viewModel.playerUiState.collectAsStateWithLifecycle()
-    when (playerState) {
+    when (playerState.state) {
         PlayerState.INITIAL -> {}
         PlayerState.READY -> {
             LaunchedEffect(true) {
                 startService()
             }
+        }
+    }
+    DisposableEffect(Unit) {
+        onDispose {
+            stopService()
         }
     }
 }
@@ -52,9 +63,12 @@ fun DetailScreen(
     music: MusicModel?,
     hasNext: Boolean,
     hasPrevious: Boolean,
+    position: Long?,
+    duration: Long?,
     onPlayButtonClicked: (Unit) -> Unit,
     onNextButtonClicked: (Unit) -> Unit,
     onPreviousButtonClicked: (Unit) -> Unit,
+    onSeekTo: (Long) -> Unit,
 ) {
     music?.let {
         Column(
@@ -65,6 +79,8 @@ fun DetailScreen(
             Spacer(modifier = Modifier.padding(top = 16.dp))
             Text(text = it.musicName, fontSize = 24.sp, textAlign = TextAlign.Left)
             Spacer(modifier = Modifier.padding(top = 100.dp))
+            PlayerSeekBar(position = position, duration = duration, onSeekTo = onSeekTo)
+            Spacer(modifier = Modifier.padding(top = 30.dp))
             PlayerButton(
                 hasNext = hasNext,
                 hasPrevious = hasPrevious,
@@ -74,6 +90,16 @@ fun DetailScreen(
             )
         }
     }
+}
+
+@Composable
+fun PlayerSeekBar(
+    position: Long?,
+    duration: Long?,
+    onSeekTo: (Long) -> Unit,
+) {
+    val value = if (position == null || duration == null) 0f else (position / duration).toFloat()
+    Slider(value = value, onValueChange = { onSeekTo(it.toLong()) })
 }
 
 @Composable

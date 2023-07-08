@@ -13,6 +13,7 @@ import com.example.musicplayerandroidapp.ui.home.HomeScreen
 fun NavGraph(
     navController: NavHostController,
     startService: () -> Unit,
+    stopService: () -> Unit,
 ) {
     NavHost(navController = navController, startDestination = Screen.Home.route) {
         composable(route = Screen.Home.route) {
@@ -28,6 +29,7 @@ fun NavGraph(
         ) {
             DetailScreen(
                 startService = startService,
+                stopService = stopService,
             )
         }
     }

@@ -49,8 +49,13 @@ class MediaNotificationManager @Inject constructor(
             .also {
                 it.setMediaSessionToken(mediaSession.sessionCompatToken)
                 it.setUseFastForwardActionInCompactView(true)
+                it.setUseFastForwardAction(true)
                 it.setUseRewindActionInCompactView(true)
-                it.setUseNextActionInCompactView(false)
+                it.setUseRewindAction(true)
+                it.setUseNextActionInCompactView(true)
+                it.setUseNextAction(true)
+                it.setUsePreviousActionInCompactView(true)
+                it.setUsePreviousAction(true)
                 it.setPriority(NotificationCompat.PRIORITY_LOW)
                 it.setPlayer(player)
             }

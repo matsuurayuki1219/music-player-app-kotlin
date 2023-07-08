@@ -27,7 +27,11 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavGraph(navController = navController, startService = ::startService)
+                    NavGraph(
+                        navController = navController,
+                        startService = ::startService,
+                        stopService = ::stopService,
+                    )
                 }
             }
         }
@@ -44,6 +48,13 @@ class MainActivity : ComponentActivity() {
             val intent = Intent(this, PlayMusicService::class.java)
             startForegroundService(intent)
             isServiceRunning = true
+        }
+    }
+
+    private fun stopService() {
+        if (isServiceRunning) {
+            stopService(Intent(this, PlayMusicService::class.java))
+            isServiceRunning = false
         }
     }
 }
