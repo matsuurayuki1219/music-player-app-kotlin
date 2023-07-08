@@ -20,12 +20,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.musicplayerandroidapp.R
 import com.example.musicplayerandroidapp.model.MusicModel
-import com.example.musicplayerandroidapp.model.PlayerState
 
 @Composable
 fun DetailScreen(
     viewModel: DetailViewModel = hiltViewModel(),
-    startService: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     DetailScreen(
@@ -36,15 +34,6 @@ fun DetailScreen(
         onNextButtonClicked = { viewModel.onNextButtonClicked() },
         onPreviousButtonClicked = { viewModel.onPreviousButtonClicked() },
     )
-    val playerState by viewModel.playerUiState.collectAsStateWithLifecycle()
-    when (playerState) {
-        PlayerState.INITIAL -> {}
-        PlayerState.READY -> {
-            LaunchedEffect(true) {
-                startService()
-            }
-        }
-    }
 }
 
 @Composable
